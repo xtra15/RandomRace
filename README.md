@@ -18,7 +18,7 @@ automatically.
 
 
 ## Tested Ver
-26.1.2 paper
+Paper 26.1.2 
 ## Install
 
 Build with Maven, then drop the jar into the server's `plugins/` folder:
