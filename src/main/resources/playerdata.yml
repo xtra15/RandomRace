@@ -1,0 +1,2 @@
+# Player claim metadata (timestamp). The authoritative "already claimed" check is
+# ValhallaRaces' RaceManager.getRace(player).

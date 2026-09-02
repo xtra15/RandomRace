@@ -1,0 +1,69 @@
+# Race pool is pulled live from ValhallaRaces. No race definitions here.
+
+# Optional weight per race (by race id). Unlisted races default to equal weight.
+race-weights:
+  human: 40
+
+one-time-only: true
+
+# Optional icon material override per race id. Else race.getIcon(); else PAPER.
+race-materials:
+  human: PLAYER_HEAD
+
+broadcast-enabled: true
+
+# Optional weight per class (by class id). Unlisted classes default to equal weight.
+class-weights: {}
+
+# Optional icon material override per class id. Else class icon; else PAPER.
+class-materials: {}
+
+# Display names for the class groups (1-10).
+groups:
+  1: "Warrior"
+  2: "Specialist"
+  3: "Adept"
+  4: "Healer"
+  5: "Guardian"
+  6: "Shadow"
+  7: "Warlord"
+  8: "Mystic"
+  9: "Artisan"
+  10: "Weaver"
+
+class-one-time-only: true
+broadcast-class: true
+
+# How many distinct class groups (categories) are rolled. Synced with /randomrace setclasscount.
+classes-count: 3
+
+# Title of the class roll GUI while rolling each group. {group} = that category's name (groups.<n>).
+classes-gui-title: "&8{group} Class"
+
+# Send the unlocked race/class stat breakdown (buffs green, debuffs red) in chat after assignment.
+stats-message-enabled: true
+
+# Send a clickable-looking link line to the companion website after assignment.
+# Leave link-url empty to disable. Set to your live site (e.g. https://xtra15.github.io/Races/races.html)
+link-enabled: true
+link-url: ""
+link-race-template: "{url}#{race}"
+link-class-template: "{url}"
+
+messages:
+  already-claimed: "&cYou have already claimed your race!"
+  spin-start: "&eThe fates are deciding your race..."
+  race-assigned: "&aYou have been chosen as a &e{race}&a!"
+  title: "&e&l{race}&r"
+  subtitle: "&7You have been destined to be a &e{race}&7!"
+  no-permission: "&cYou don't have permission to use this."
+  broadcast: "&e{player} &ahas been destined to be a &e{race}&a!"
+  class-no-permission: "&cYou don't have permission to use this."
+  class-already-claimed: "&cYou already have all your classes!"
+  class-spin-start: "&eThe fates are choosing your classes..."
+  class-assigned: "&eYou are now a &b{group} {class}&e!"
+  class-subtitle: "&7You have been destined with your classes!"
+  class-summary: "&aYour classes are now: &e{classes}&a!"
+  race-link: "&7Full details: &f{url}"
+  class-link: "&7Full details: &f{url}"
+  class-broadcast: "&e{player} &ahas been destined with their classes!"
