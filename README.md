@@ -16,6 +16,9 @@ Both are declared as hard dependencies in `plugin.yml`. This plugin does **not**
 duplicate any race or class definitions; whatever races/classes exist on the server are used
 automatically.
 
+
+## Tested Ver
+26.1.2 paper
 ## Install
 
 Build with Maven, then drop the jar into the server's `plugins/` folder:
