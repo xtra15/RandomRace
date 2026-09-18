@@ -25,7 +25,7 @@ Build with Maven, then drop the jar into the server's `plugins/` folder:
 
 ```bash
 mvn package
-# Result: target/randomrace-1.0.0.jar
+# Result: target/randomrace-1.3.0.jar
 ```
 
 ## Commands & Permissions
@@ -34,6 +34,9 @@ mvn package
 |---|---|---|
 | `/claimrace` | `randomrace.claim` | Run the spin and assign a random race |
 | `/claimclass` | `randomrace.class` | Roll one random class per group (3-slot strip) |
+| `/rerollrace` | `randomrace.claim` | Spend 1 race reroll to spin a new race |
+| `/rerollclass` | `randomrace.class` | Spend 1 class reroll to re-roll all classes up to your slot cap |
+| `/raceslot` | `randomrace.claim` | Open your 5 saved-race slots (save, replace, load) |
 | `/randomrace reset <player>` | `randomrace.admin` | Remove the player's race, allow re-claim |
 | `/randomrace reroll <player>` | `randomrace.admin` | Force a fresh race spin for the player |
 | `/randomrace setrace <player> <race>` | `randomrace.admin` | Directly assign a race (no animation) |

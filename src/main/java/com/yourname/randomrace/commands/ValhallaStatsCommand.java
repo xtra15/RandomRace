@@ -1,6 +1,7 @@
 package com.yourname.randomrace.commands;
 
 import com.yourname.randomrace.RandomRacePlugin;
+import com.yourname.randomrace.managers.RerollService;
 import com.yourname.randomrace.utils.MessageUtil;
 import com.yourname.randomrace.utils.StatInfo;
 import me.athlaeos.valhallaraces.Class;
@@ -105,6 +106,12 @@ public class ValhallaStatsCommand implements CommandExecutor, TabCompleter {
                     sender.sendMessage(MessageUtil.color("&8" + groupName(c.getGroup()) + ": &f" + strip(c.getDisplayName())));
                 }
             }
+        }
+        UUID targetUuid = online != null ? online.getUniqueId() : plugin.getPlayerDataManager().resolveOffline(name);
+        if (targetUuid != null) {
+            RerollService rs = plugin.getRerollService();
+            sender.sendMessage(MessageUtil.color("&8Rerolls: &f" + rs.raceRerolls(targetUuid) + " race / "
+                    + rs.classRerolls(targetUuid) + " class &8- Slots: &f" + rs.classSlots(targetUuid)));
         }
         for (String line : StatInfo.formatCombinedStats(raceKey, classKeys, valhallaRacesFolder())) {
             sender.sendMessage(line);

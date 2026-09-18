@@ -2,7 +2,6 @@ package com.yourname.randomrace.commands;
 
 import com.yourname.randomrace.RandomRacePlugin;
 import com.yourname.randomrace.gui.SpinAnimation;
-import com.yourname.randomrace.managers.RacePoolManager;
 import com.yourname.randomrace.managers.RerollService;
 import com.yourname.randomrace.utils.MessageUtil;
 import com.yourname.randomrace.utils.RerollMessages;
@@ -17,12 +16,12 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.Random;
 
-public class ClaimRaceCommand implements CommandExecutor {
+public class RerollRaceCommand implements CommandExecutor {
     private final RandomRacePlugin plugin;
     private final RerollService rerollService;
     private final Random random = new Random();
 
-    public ClaimRaceCommand(RandomRacePlugin plugin) {
+    public RerollRaceCommand(RandomRacePlugin plugin) {
         this.plugin = plugin;
         this.rerollService = plugin.getRerollService();
     }
@@ -30,7 +29,7 @@ public class ClaimRaceCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(MessageUtil.color("&cOnly players can claim a race."));
+            sender.sendMessage(MessageUtil.color("&cOnly players can reroll a race."));
             return true;
         }
         Player p = (Player) sender;
@@ -38,14 +37,6 @@ public class ClaimRaceCommand implements CommandExecutor {
             p.sendMessage(MessageUtil.color(plugin.getConfig().getString("messages.no-permission", "&cYou don't have permission to use this.")));
             return true;
         }
-        if (rerollService.isRaceClaimed(p) && plugin.getConfig().getBoolean("one-time-only", true)) {
-            return reroll(p);
-        }
-        spin(p);
-        return true;
-    }
-
-    private boolean reroll(Player p) {
         if (!rerollService.trySpendRaceReroll(p.getUniqueId())) {
             p.sendMessage(MessageUtil.color(plugin.getConfig().getString("messages.reroll-race-no-points", "&cYou have no race rerolls left. Ask an admin to give you some.")));
             SoundUtil.play(p, Sound.ENTITY_VILLAGER_NO);
@@ -62,18 +53,5 @@ public class ClaimRaceCommand implements CommandExecutor {
         p.sendMessage(MessageUtil.color(plugin.getConfig().getString("messages.reroll-race-spin", "&eThe fates are rerolling your race...")));
         new SpinAnimation(plugin, p, winner).start();
         return true;
-    }
-
-    private void spin(Player p) {
-        plugin.getRacePoolManager().refresh();
-        RacePoolManager rpm = plugin.getRacePoolManager();
-        List<Race> available = rpm.getAvailableRaces(p);
-        if (available.isEmpty()) {
-            p.sendMessage(MessageUtil.color("&cThere are no races available to you right now."));
-            return;
-        }
-        Race winner = rpm.pickWeighted(random, available);
-        p.sendMessage(MessageUtil.color(plugin.getConfig().getString("messages.spin-start", "&eThe fates are deciding your race...")));
-        new SpinAnimation(plugin, p, winner).start();
     }
 }

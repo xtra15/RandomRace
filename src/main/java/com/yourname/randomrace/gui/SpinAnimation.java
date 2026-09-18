@@ -3,6 +3,7 @@ package com.yourname.randomrace.gui;
 import com.yourname.randomrace.RandomRacePlugin;
 import com.yourname.randomrace.managers.AssignmentManager;
 import com.yourname.randomrace.utils.MessageUtil;
+import com.yourname.randomrace.utils.RerollMessages;
 import com.yourname.randomrace.utils.SoundUtil;
 import com.yourname.randomrace.utils.StatInfo;
 import me.athlaeos.valhallaraces.Race;
@@ -158,6 +159,7 @@ public class SpinAnimation implements Listener {
                     plugin.getConfig().getString("messages.race-assigned", "&aYou have been chosen as a &e{race}&a!"));
             player.sendMessage(MessageUtil.color(assigned));
             sendStatsAndLink(name);
+            RerollMessages.sendRerollsLeft(player, plugin);
             SoundUtil.play(player, Sound.ENTITY_FIREWORK_ROCKET_BLAST);
             if (plugin.getConfig().getBoolean("broadcast-enabled", true)) {
                 String bc = MessageUtil.replace("{player}", player.getName(),

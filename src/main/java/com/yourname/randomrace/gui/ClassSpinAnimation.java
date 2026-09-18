@@ -4,6 +4,7 @@ import com.yourname.randomrace.RandomRacePlugin;
 import com.yourname.randomrace.managers.ClassAssignmentManager;
 import com.yourname.randomrace.managers.ClassPoolManager;
 import com.yourname.randomrace.utils.MessageUtil;
+import com.yourname.randomrace.utils.RerollMessages;
 import com.yourname.randomrace.utils.SoundUtil;
 import com.yourname.randomrace.utils.StatInfo;
 import me.athlaeos.valhallaraces.Class;
@@ -52,6 +53,7 @@ public class ClassSpinAnimation implements Listener {
     private final RandomRacePlugin plugin;
     private final Player player;
     private final Map<Integer, Class> winners;
+    private final Map<Integer, Class> keep;
     private final ClassPoolManager poolManager;
     private final ClassAssignmentManager assignmentManager;
     private final Map<Integer, String> groupNames = new LinkedHashMap<>();
@@ -60,9 +62,14 @@ public class ClassSpinAnimation implements Listener {
     private boolean completed = false;
 
     public ClassSpinAnimation(RandomRacePlugin plugin, Player player, Map<Integer, Class> winners) {
+        this(plugin, player, winners, java.util.Collections.emptyMap());
+    }
+
+    public ClassSpinAnimation(RandomRacePlugin plugin, Player player, Map<Integer, Class> winners, Map<Integer, Class> keep) {
         this.plugin = plugin;
         this.player = player;
         this.winners = winners;
+        this.keep = keep == null ? java.util.Collections.emptyMap() : keep;
         this.assignmentManager = new ClassAssignmentManager(plugin);
         this.poolManager = plugin.getClassPoolManager();
         loadGroupNames();
@@ -191,7 +198,12 @@ public class ClassSpinAnimation implements Listener {
     private void finish() {
         completed = true;
         HandlerList.unregisterAll(this);
-        assignmentManager.assign(player, new ArrayList<>(winners.values()));
+        Map<Integer, Class> all = new LinkedHashMap<>();
+        all.putAll(keep);
+        for (Map.Entry<Integer, Class> e : winners.entrySet()) {
+            all.put(e.getKey(), e.getValue());
+        }
+        assignmentManager.assign(player, new ArrayList<>(all.values()));
         StringBuilder title = new StringBuilder();
         String subtitle = MessageUtil.color(plugin.getConfig().getString("messages.class-subtitle", "&7You have been destined with your classes!"));
         for (Map.Entry<Integer, Class> e : winners.entrySet()) {
@@ -207,6 +219,7 @@ public class ClassSpinAnimation implements Listener {
                 plugin.getConfig().getString("messages.class-summary", "&aYour classes are now: &e{classes}&a!"));
         player.sendMessage(MessageUtil.color(summary));
         sendStatsAndLink(parts);
+        RerollMessages.sendRerollsLeft(player, plugin);
         SoundUtil.play(player, Sound.ENTITY_FIREWORK_ROCKET_BLAST);
         if (plugin.getConfig().getBoolean("broadcast-class", true)) {
             String bc = MessageUtil.replace("{player}", player.getName(),

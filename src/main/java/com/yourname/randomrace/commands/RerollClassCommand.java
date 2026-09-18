@@ -8,7 +8,6 @@ import com.yourname.randomrace.utils.MessageUtil;
 import com.yourname.randomrace.utils.RerollMessages;
 import com.yourname.randomrace.utils.SoundUtil;
 import me.athlaeos.valhallaraces.Class;
-import me.athlaeos.valhallaraces.ClassManager;
 import me.athlaeos.valhallaraces.Race;
 import me.athlaeos.valhallaraces.RaceManager;
 import org.bukkit.Sound;
@@ -21,15 +20,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
-public class ClaimClassCommand implements CommandExecutor {
+public class RerollClassCommand implements CommandExecutor {
     private final RandomRacePlugin plugin;
     private final ClassAssignmentManager assignmentManager;
     private final RerollService rerollService;
     private final Random random = new Random();
 
-    public ClaimClassCommand(RandomRacePlugin plugin) {
+    public RerollClassCommand(RandomRacePlugin plugin) {
         this.plugin = plugin;
         this.assignmentManager = new ClassAssignmentManager(plugin);
         this.rerollService = plugin.getRerollService();
@@ -38,7 +36,7 @@ public class ClaimClassCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(MessageUtil.color("&cOnly players can claim classes."));
+            sender.sendMessage(MessageUtil.color("&cOnly players can reroll classes."));
             return true;
         }
         Player p = (Player) sender;
@@ -46,23 +44,13 @@ public class ClaimClassCommand implements CommandExecutor {
             p.sendMessage(MessageUtil.color(plugin.getConfig().getString("messages.class-no-permission", "&cYou don't have permission to use this.")));
             return true;
         }
-        int cap = rerollService.classSlots(p.getUniqueId());
-        Map<Integer, Class> existing = ClassManager.getClasses(p);
-        int have = existing == null ? 0 : existing.size();
-        if (have >= cap) {
-            return reroll(p, cap);
-        }
-        fill(p, cap, existing);
-        return true;
-    }
-
-    private boolean reroll(Player p, int cap) {
         if (!rerollService.trySpendClassReroll(p.getUniqueId())) {
             p.sendMessage(MessageUtil.color(plugin.getConfig().getString("messages.reroll-class-no-points", "&cYou have no class rerolls left. Ask an admin to give you some.")));
             SoundUtil.play(p, Sound.ENTITY_VILLAGER_NO);
             RerollMessages.sendRerollsLeft(p, plugin);
             return true;
         }
+        int cap = rerollService.classSlots(p.getUniqueId());
         assignmentManager.clear(p);
         plugin.getClassPoolManager().refresh();
         String race = raceName(p);
@@ -79,25 +67,6 @@ public class ClaimClassCommand implements CommandExecutor {
         p.sendMessage(MessageUtil.color(plugin.getConfig().getString("messages.reroll-class-spin", "&eThe fates are rerolling your classes...")));
         new ClassSpinAnimation(plugin, p, winners).start();
         return true;
-    }
-
-    private void fill(Player p, int cap, Map<Integer, Class> existing) {
-        Map<Integer, Class> live = existing == null ? new LinkedHashMap<>() : existing;
-        plugin.getClassPoolManager().refresh();
-        String race = raceName(p);
-        Set<Integer> skip = live.keySet();
-        List<Integer> groups = plugin.getClassPoolManager().pickRandomGroups(random, cap, p, race, skip);
-        Map<Integer, Class> winners = new LinkedHashMap<>();
-        for (Integer g : groups) {
-            Class c = plugin.getClassPoolManager().pickForGroup(random, g, p, race);
-            if (c != null) winners.put(g, c);
-        }
-        if (winners.isEmpty()) {
-            p.sendMessage(MessageUtil.color("&cNo classes are available to you right now."));
-            return;
-        }
-        p.sendMessage(MessageUtil.color(plugin.getConfig().getString("messages.class-spin-start", "&eThe fates are choosing your classes...")));
-        new ClassSpinAnimation(plugin, p, winners, live).start();
     }
 
     private String raceName(Player p) {
